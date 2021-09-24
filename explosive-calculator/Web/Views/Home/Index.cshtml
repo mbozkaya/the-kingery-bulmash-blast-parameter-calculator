@@ -1,0 +1,24 @@
+﻿@model List<Web.DBModel.ExplosiveType>
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <form action="/Home/Calculate">
+        <input type="text" autocomplete="off" list="explosiveTypes" name="ExplosiveTypes"/>
+        <datalist id="explosiveTypes">
+            @{ foreach (var item in Model)
+                {
+                        <option value="@item.Id" label="@item.Name" ></option>
+                }
+            }
+        </datalist>
+        <label for="wight">Weight</label>
+        <input type="number" name="weight" id="weight"/>
+        <label for="range">Range</label>
+        <input type="number" name="range" id="range"/>
+        <button type="submit">Submit</button>
+    </form>
+    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>

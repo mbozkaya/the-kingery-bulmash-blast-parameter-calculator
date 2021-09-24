@@ -1,0 +1,15 @@
+*.suo
+explosive-calculator/Web/obj/
+explosive-calculator/Web/bin/
+explosive-calculator/Web/.vs/
+*.ps1
+*.cmd
+*.cmd
+*.json
+*.csproj.user
+explosive-calculator/Web/Migrations/
+.vs/
+*.dll
+*.pdb
+*.exe
+*.cache
