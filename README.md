@@ -20,11 +20,6 @@ Open it with Visual Studio. The project uses a code-first approach so it will cr
 Now you can see the home page which shows the calculator form and the results table
 That's it.
 
-
-```bash
-pip install foobar
-```
-
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
