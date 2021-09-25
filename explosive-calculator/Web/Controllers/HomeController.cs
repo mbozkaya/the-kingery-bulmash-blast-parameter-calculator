@@ -43,20 +43,68 @@ namespace Web.Controllers
         }
 
         [HttpGet]
-        public IActionResult Calculate(int explosionType, double weight, double range)
+        public JsonResult Calculate(int explosiveType, double weight, double range)
         {
             _weight = weight;
             _range = range;
-            return View();
+            Exception _ex = null;
+
+            try
+            {
+                DoCalculate(explosiveType);
+            }
+            catch (Exception ex)
+            {
+                _ex = ex;
+            }
+
+            return new JsonResult(new { error = _ex != null, errorMessage = _ex?.Message ?? string.Empty });
         }
 
-        public CalculationResult DoCalculate(int explosionType, decimal weight, decimal range)
+        [HttpPost]
+        public JsonResult GetData(DataTableParameters dataTableParameters)
+        {
+
+            int page = dataTableParameters.Start == 0 ? 0 : (dataTableParameters.Start / dataTableParameters.Length) - 1;
+            DataTableReturnModel returnModel = new DataTableReturnModel
+            {
+                Data = _eCDBContext.CalculationResults.Select(s => new DataTableDataModel
+                {
+                    Id = s.Id,
+                    CreatedDate = s.CreatedDate,
+                    ExplosiveType = s.CalculationEntry.ExplosiveType.Name,
+                    IncidentImpulse = s.IncidentImpulse,
+                    IncidentPressure = s.IncidentPressure,
+                    PositivePhaseDuration = s.PositivePhaseDuration,
+                    Range = s.CalculationEntry.Range,
+                    ReflectedImpulse = s.ReflectedImpulse,
+                    ReflectedPressure = s.ReflectedPressure,
+                    ShockFrontVelocity = s.ShockFrontVelocity,
+                    TimeOfArrival = s.TimeOfArrival,
+                    TNTWeightForImpulse = s.TNTWeightForImpulse,
+                    TNTWeightForPressure = s.TNTWeightForPressure,
+                    Weight = s.CalculationEntry.Weight,
+                })
+                .Skip(page * dataTableParameters.Length)
+                .Take(dataTableParameters.Length)
+                .OrderByDescending(o => o.Id)
+            .ToList(),
+                Draw = dataTableParameters.Draw,
+                RecordsFiltered = _eCDBContext.CalculationResults.Count(),
+                RecordsTotal = _eCDBContext.CalculationResults.Count(),
+            };
+
+
+            return new JsonResult(returnModel);
+        }
+
+        private CalculationResult DoCalculate(int explosionType)
         {
             var newEntry = new CalculationEntry
             {
                 ExplosiveTypeId = explosionType,
-                Range = range,
-                Weight = weight
+                Range = _range,
+                Weight = _weight
             };
             _eCDBContext.CalculationEntries.Add(newEntry);
             _eCDBContext.SaveChanges();
@@ -68,16 +116,24 @@ namespace Web.Controllers
 
             var newResult = new CalculationResult
             {
-                TNTWeightForPressure = explosive.PeakPressureTNTEquiv * weight,
-                TNTWeightForImpulse = explosive.ImpulseTNTEquiv * weight,
-                IncidentPressure = (decimal)calculateIncidentPressure(t),
-                IncidentImpulse = (decimal)calculateIncidentImpulse(t),
-                ReflectedPressure = (decimal)calculateReflectedPressure(t),
-                ReflectedImpulse = (decimal)calculateReflectedImpulse(t),
-                TimeOfArrival = (decimal)calculateTimeOfArrival(t),
-                PositivePhaseDuration = (decimal)
-
+                TNTWeightForPressure = explosive.PeakPressureTNTEquiv * newEntry.Weight,
+                TNTWeightForImpulse = explosive.ImpulseTNTEquiv * newEntry.Weight,
+                IncidentPressure = calculateIncidentPressure(t),
+                IncidentImpulse = calculateIncidentImpulse(t),
+                ReflectedPressure = calculateReflectedPressure(t),
+                ReflectedImpulse = calculateReflectedImpulse(t),
+                TimeOfArrival = calculateTimeOfArrival(t),
+                PositivePhaseDuration = calculatePositivePhaseDuration(t),
+                ShockFrontVelocity = calculateShockFrontVelocity(t),
+                CalculationEntryId = newEntry.Id,
+                CreatedDate = DateTime.Now,
             };
+
+            _eCDBContext.CalculationResults.Add(newResult);
+
+            _eCDBContext.SaveChanges();
+
+            return newResult;
         }
 
         private double getChargeWeight(string equivType = "")
@@ -240,6 +296,27 @@ namespace Web.Controllers
             ppd = Math.Pow(10, ppd);
             ppd = ppd * cubeRootOfChargeWeight;
             return ppd;
+        }
+
+        private double calculateShockFrontVelocity(double t)
+        {
+            var U = -0.202425716178 + 1.37784223635 * t;
+            var sv = -0.06621072854 - 0.698029762594 * U +
+                0.158916781906 * Math.Pow(U, 2) +
+                0.443812098136 * Math.Pow(U, 3) -
+                0.113402023921 * Math.Pow(U, 4) -
+                0.369887075049 * Math.Pow(U, 5) +
+                0.129230567449 * Math.Pow(U, 6) +
+                0.19857981197 * Math.Pow(U, 7) -
+                0.0867636217397 * Math.Pow(U, 8) -
+                0.0620391900135 * Math.Pow(U, 9) +
+                0.0307482926566 * Math.Pow(U, 10) +
+                0.0102657234407 * Math.Pow(U, 11) -
+                0.00546533250772 * Math.Pow(U, 12) -
+                0.000693180974 * Math.Pow(U, 13) +
+                0.0003847494916 * Math.Pow(U, 14);
+            sv = Math.Pow(10, sv) * 1000;
+            return sv;
         }
     }
 }
