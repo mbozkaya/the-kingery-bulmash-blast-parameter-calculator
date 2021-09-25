@@ -5,7 +5,6 @@ explosive-calculator/Web/.vs/
 *.ps1
 *.cmd
 *.cmd
-*.json
 *.csproj.user
 explosive-calculator/Web/Migrations/
 .vs/
