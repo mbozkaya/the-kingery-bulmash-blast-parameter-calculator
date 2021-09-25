@@ -12,15 +12,15 @@ namespace Web.DBModel
         public int Id { get; set; }
         public int CalculationEntryId { get; set; }
         public virtual CalculationEntry CalculationEntry { get; set; }
-        public decimal TNTWeightForPressure { get; set; }
-        public decimal IncidentPressure { get; set; }
-        public decimal ReflectedPressure { get; set; }
-        public decimal TimeOfArrival { get; set; }
-        public decimal ShockFrontVelocity { get; set; }
-        public decimal TNTWeightForImpulse { get; set; }
-        public decimal IncidentImpulse { get; set; }
-        public decimal ReflectedImpulse { get; set; }
-        public decimal PositivePhaseDuration { get; set; }
+        public double TNTWeightForPressure { get; set; }
+        public double IncidentPressure { get; set; }
+        public double ReflectedPressure { get; set; }
+        public double TimeOfArrival { get; set; }
+        public double ShockFrontVelocity { get; set; }
+        public double TNTWeightForImpulse { get; set; }
+        public double IncidentImpulse { get; set; }
+        public double ReflectedImpulse { get; set; }
+        public double PositivePhaseDuration { get; set; }
 
         public DateTime CreatedDate { get; set; } = DateTime.Now;
     }

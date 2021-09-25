@@ -12,8 +12,8 @@ namespace Web.DBModel
         public int Id { get; set; }
         public int ExplosiveTypeId { get; set; }
         public virtual ExplosiveType ExplosiveType { get; set; }
-        public decimal Weight { get; set; }
-        public decimal Range { get; set; }
+        public double Weight { get; set; }
+        public double Range { get; set; }
 
         public virtual ICollection<CalculationResult> CalculationResults { get; set; }
     }

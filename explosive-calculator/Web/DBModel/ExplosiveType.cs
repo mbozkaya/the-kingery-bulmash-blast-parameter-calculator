@@ -12,10 +12,9 @@ namespace Web.DBModel
         public int Id { get; set; }
         public string Name { get; set; }
         public int GurneyEnergy { get; set; }
-        public decimal ImpulseTNTEquiv { get; set; }
-        public decimal PeakPressureTNTEquiv { get; set; }
+        public double ImpulseTNTEquiv { get; set; }
+        public double PeakPressureTNTEquiv { get; set; }
         public string PressureRange { get; set; }
-
         public virtual ICollection<CalculationEntry> CalculationEntries { get; set; }
 
     }
